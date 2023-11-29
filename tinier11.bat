@@ -268,6 +268,10 @@ rd /s /q %~dp0scratchdir >NUL
 copy /y %~dp0autounattend.xml %~dp0tinier11\autounattend.xml
 @echo.
 
+@rem add virtio driver
+
+call virtio.bat
+
 @rem saving existing "tinier11.iso" file
 if exist tinier11.iso ren tinier11.iso "tinier11-%date:~10,4%%date:~7,2%%date:~4,2%-%time:~0,2%%time:~3,2%.iso"
 
