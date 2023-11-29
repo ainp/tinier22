@@ -43,5 +43,6 @@ dism /image:.\mnt /add-driver /driver:.\virtio-win-0.1.240\vioscsi\w11\amd64\vio
 dism /image:.\mnt /get-drivers
 dism /unmount-wim /mountdir:.\mnt /commit
 rd /s /q .\mnt 2>NUL
+rd /s /q .\virtio-win-0.1.240 2>NUL
 
 @echo.The virtio driver image success!
