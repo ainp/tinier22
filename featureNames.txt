@@ -14,4 +14,3 @@ WCF-TCP-PortSharing45
 MediaPlayback
 WindowsMediaPlayer
 WorkFolders-Client
-Internet-Explorer-Optional-x86
