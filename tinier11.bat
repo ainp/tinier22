@@ -271,6 +271,9 @@ copy /y %~dp0autounattend.xml %~dp0tinier11\autounattend.xml
 @rem add virtio driver
 
 call virtio.bat
+pause
+wiminfo  %~dp0tinier11\sources\install.wim 'Windows Pro 11' --image-property WINDOWS/INSTALLATIONTYPE=Server
+pause
 
 @rem saving existing "tinier11.iso" file
 if exist tinier11.iso ren tinier11.iso "tinier11-%date:~10,4%%date:~7,2%%date:~4,2%-%time:~0,2%%time:~3,2%.iso"
