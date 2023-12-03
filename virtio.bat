@@ -7,9 +7,10 @@ rd /s /q .\virtio-win 2>NUL
 
 mkdir mnt
 
+@echo.Download virtio-win
 curl -o virtio-win.iso --ssl-no-revoke https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.240-1/virtio-win-0.1.240.iso
-
-7z x -ovirtio-win virtio-win.iso
+pause
+.\tools\7z x -ovirtio-win virtio-win.iso
 
 @rem add driver to boot.wim index 1
 dism /get-wiminfo /wimfile:.\tinier11\sources\boot.wim

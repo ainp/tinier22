@@ -14,9 +14,11 @@ title tinier11 builder
 
 @rem use script's directory for all temporary files/dirs
 cd /D %~dp0
-
+cd tools
 @rem Check if there is oscdimg.exe in PATH
-where oscdimg.exe >NUL || (call :showerror "OsCdImg.exe is not found in PATH. Get it from Windows ADK and put into script dir or any other dir in PATH." & goto Stop)
+where  oscdimg.exe >NUL || (call :showerror "OsCdImg.exe is not found in PATH .\tools. Get it from Windows ADK and put into  .\tools." & goto Stop)
+where  7z.exe 7z.dll >NUL || (call :showerror "7z.exe or 7z.dll is not found in PATH .\tools. Get it from https://www.7-zip.org/download.html and only (7z.exe 7z.dll) put into  .\tools." & goto Stop)
+cd ..
 
 
 @rem Get Windows ISO mounted drive letter
@@ -271,18 +273,28 @@ copy /y %~dp0autounattend.xml %~dp0tinier11\autounattend.xml
 @echo.
 
 @rem add virtio driver
-
-
+@echo. add virtio driver........
+pause
 call virtio.bat
+@echo.download wimlib.......
 
-wimlib-imagex info .\tinier11\sources\install.wim 1 --image-property WINDOWS/INSTALLATIONTYPE=Server
 
+rd /s /q .\wimlib
+
+curl -o wimlib.zip --ssl-no-revoke https://wimlib.net/downloads/wimlib-1.14.3-windows-x86_64-bin.zip
+mkdir wimlib
+
+.\tools\7z x -owimlib wimlib.zip
+.\wimlib\wimlib-imagex info .\tinier11\sources\install.wim 1 --image-property WINDOWS/INSTALLATIONTYPE=Server
+pause
+rd /s /q .\wimlib
+del wimlib.zip
 
 @rem saving existing "tinier11.iso" file
 if exist tinier11.iso ren tinier11.iso "tinier11-%date:~10,4%%date:~7,2%%date:~4,2%-%time:~0,2%%time:~3,2%.iso"
 
 @echo.Creating ISO image... Make sure that you have oscdimg.exe from Windows ADK in your PATH.
-oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b%~dp0tinier11\boot\etfsboot.com#pEF,e,b%~dp0tinier11\efi\microsoft\boot\efisys.bin %~dp0tinier11 %~dp0tinier11.iso  || call :showerror "Creating image with oscdimg.exe failed."
+.\tools\oscdimg.exe -m -o -u2 -udfver102 -bootdata:2#p0,e,b%~dp0tinier11\boot\etfsboot.com#pEF,e,b%~dp0tinier11\efi\microsoft\boot\efisys.bin %~dp0tinier11 %~dp0tinier11.iso  || call :showerror "Creating image with oscdimg.exe failed."
 
 @rem list created ISO file
 dir %~dp0tinier11.iso
