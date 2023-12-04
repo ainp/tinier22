@@ -5,12 +5,14 @@ rd /s /q .\mnt 2>NUL
 rd /s /q .\virtio-win 2>NUL
 
 
-mkdir mnt
 
 @echo.Download virtio-win
-curl -o virtio-win.iso --ssl-no-revoke https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.240-1/virtio-win-0.1.240.iso
-pause
-.\tools\7z x -ovirtio-win virtio-win.iso
+curl -o virtio-win.iso --ssl-no-revoke https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/archive-virtio/virtio-win-0.1.240-1/virtio-win-0.1.240.iso || (call :showerror "Download virtio-win drivers failed." & goto VirtioEnd)
+
+.\tools\7z x -ovirtio-win virtio-win.iso || (call :showerror "7z x virtio-win failed." & goto VirtioEnd)
+
+mkdir mnt 2>NUL
+
 
 @rem add driver to boot.wim index 1
 dism /get-wiminfo /wimfile:.\tinier11\sources\boot.wim
@@ -49,8 +51,11 @@ dism /image:.\mnt /add-driver /driver:.\virtio-win\vioscsi\w11\amd64\vioscsi.inf
 
 dism /image:.\mnt /get-drivers
 dism /unmount-wim /mountdir:.\mnt /commit
-rd /s /q .\mnt 2>NUL
-rd /s /q .\virtio-win 2>NUL
-del virtio-win.iso
+
 
 @echo.The virtio driver image success!
+
+:VirtioEnd
+rd /s /q .\mnt 2>NUL
+rd /s /q .\virtio-win 2>NUL
+del virtio-win.iso 2>NUL

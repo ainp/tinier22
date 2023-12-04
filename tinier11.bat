@@ -274,21 +274,23 @@ copy /y %~dp0autounattend.xml %~dp0tinier11\autounattend.xml
 
 @rem add virtio driver
 @echo. add virtio driver........
-pause
+
 call virtio.bat
 @echo.download wimlib.......
 
 
-rd /s /q .\wimlib
+rd /s /q .\wimlib >NUL
+mkdir wimlib >NUL
+curl -o wimlib.zip --ssl-no-revoke https://wimlib.net/downloads/wimlib-1.14.3-windows-x86_64-bin.zip || (call :showerror "Download wimlib failed." & goto WimLibEnd)
 
-curl -o wimlib.zip --ssl-no-revoke https://wimlib.net/downloads/wimlib-1.14.3-windows-x86_64-bin.zip
-mkdir wimlib
 
-.\tools\7z x -owimlib wimlib.zip
-.\wimlib\wimlib-imagex info .\tinier11\sources\install.wim 1 --image-property WINDOWS/INSTALLATIONTYPE=Server
-pause
-rd /s /q .\wimlib
-del wimlib.zip
+.\tools\7z x -owimlib wimlib.zip || (call :showerror "7z x wimlib failed." & goto WimLibEnd)
+.\wimlib\wimlib-imagex info .\tinier11\sources\install.wim 1 --image-property WINDOWS/INSTALLATIONTYPE=Server || (call :showerror "wiminfo failed.")
+
+
+:WimLibEnd
+rd /s /q .\wimlib >NUL
+del wimlib.zip >NUL
 
 @rem saving existing "tinier11.iso" file
 if exist tinier11.iso ren tinier11.iso "tinier11-%date:~10,4%%date:~7,2%%date:~4,2%-%time:~0,2%%time:~3,2%.iso"
